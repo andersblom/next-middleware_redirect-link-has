@@ -4,8 +4,18 @@ import type { NextRequest } from 'next/server'
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
     if (request.nextUrl.pathname === '/foo') {
-        return NextResponse.redirect(new URL('/bar#baz', request.url))
+        const destination = request.nextUrl.clone();
+        destination.hash = '#baz';
+        destination.pathname = '/bar'
+        return NextResponse.redirect(destination)
     }
+    if (request.nextUrl.pathname === '/baz') {
+        const destination = request.nextUrl.clone();
+        destination.searchParams.set('baz', 'qux');
+        destination.pathname = '/bar'
+        return NextResponse.redirect(destination)
+    }
+    return NextResponse.next();
 }
 
 export const config = {
